@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alerta Glucosa</title>
+  <!-- Bootstrap 5.3.7 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/main.css">
+  
+</head>
+<body>
+  <div class="container py-3">
+    <!-- Logo y Título -->
+    <div class="text-center mb-3">
+      <div class="logo justify-content-center">
+        <img src="../misc/glucoseAlert.png" class="logo-icon" alt="Icono">
+        
+      </div>
+    </div>
+    
+    <!-- Botón de Monitoreo -->
+    <div class="text-center mb-3">
+      <button class="btn btn-primary w-100 btn-monitor" id="startMonitorButton">
+        <i class="fas fa-play"></i> Iniciar monitoreo
+      </button>
+    </div>
+    
+    <!-- Navegación -->
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <a class="nav-link active" href="#">Mi información médica</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Configuración</a>
+      </li>
+    </ul>
+    
+    <!-- Dashboard del Usuario -->
+    <div class="glucose-card">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <div class="glucose-value" id="latestGlucoseValue">
+            <span id="glucoseNumber">108</span>
+            <small class="text-muted">mg/dL</small>
+          </div>
+          <small class="text-muted">Última medición hace 12 min</small>
+        </div>
+        <span class="badge bg-success">Estable</span>
+      </div>
+      <div class="d-flex gap-2 mt-2">
+        <button class="btn btn-outline-primary flex-fill" id="viewHistoryButton">
+          <i class="fas fa-history"></i> Ver historial
+        </button>
+        <button class="btn btn-outline-secondary flex-fill">
+          <i class="fas fa-bell"></i> Enviar alerta a familiar
+        </button>
+      </div>
+    </div>
+    
+    <!-- Alertas automáticas -->
+    <div class="glucose-card">
+      <div class="alert mb-2" id="glucoseAlert" style="display:block;">
+        <strong>
+          <i class=" text-warning"></i>
+          Ultima medición (Estable):
+        </strong> 108 mg/dL
+        <br>
+        <small>Medición dentro de las rangos</small>
+      </div>
+      <div class="d-flex gap-2 mb-2">
+        <button class="btn btn-outline-primary flex-fill" id="viewRecommendationsButton">
+          <i class="fas fa-lightbulb"></i> Ver recomendaciones
+        </button>
+        <button class="btn btn-outline-secondary flex-fill" id="retryButton">
+          <i class="fas fa-redo"></i> Reintentar
+        </button>
+      </div>
+    </div>
+    
+    <!-- Configuración de perfil y sensor -->
+    <div class="row g-2">
+        <div class="col-12 col-md-6">
+          <div class="glucose-card">
+            <h6>Configuración de perfil</h6>
+            <ul class="mb-0 ps-3">
+              <li>Datos personales</li>
+              <li>Preferencias de notificación</li>
+              <li>Recordatorios de mediciones</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="glucose-card">
+            <h6>Sensor vinculado</h6>
+            <p class="mb-1">Estado: <strong>Conectado</strong></p>
+            <p class="mb-1">Hora de conexión: Hoy, 9:18 AM</p>
+            <p class="mb-0">Batería: 72%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal de Monitoreo -->
+    <div class="modal fade" id="monitorModal" tabindex="-1" aria-labelledby="monitorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="monitorModalLabel">Monitoreo de Glucosa en Tiempo Real</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+            <!-- Tarjeta de Medición -->
+            <div class="card mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <div id="glucoseValueModal" class="glucose-value">--</div>
+                    <small id="lastUpdate" class="text-muted">No hay mediciones</small>
+                </div>
+                <span id="statusBadge" class="badge bg-secondary">Sin datos</span>
+                </div>
+            </div>
+            <!-- Gráfica -->
+            <div class="card mb-3">
+                <div class="card-body">
+                <canvas id="glucoseChart" height="200"></canvas>
+                </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="historyModalLabel">Historial de Mediciones</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div id="historyContent">
+              <!-- Aquí insertaremos la tabla dinámicamente -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="recommendationsModal" tabindex="-1" aria-labelledby="recommendationsModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="recommendationsModalLabel">Recomendaciones</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body" id="recommendationsContent">
+            <!-- Aquí insertaremos el contenido dinámico -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Bootstrap JS + Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../js/glucoseMonitor.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+</html>
